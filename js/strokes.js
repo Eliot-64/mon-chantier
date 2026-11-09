@@ -345,6 +345,154 @@
     });
   };
 
+
+  /* ===== exclusifs : la bande ===== */
+  function upright(an) { return an > Math.PI / 2 || an < -Math.PI / 2 ? an + Math.PI : an; }
+
+  M.veil = function (ctx, f, a, b, st, w) {      // Fluo 25 : on se voile la face
+    ctx.strokeStyle = f.hex; ctx.lineWidth = w * 0.8; line(ctx, a, b);
+    later(a, b, st, w * 2.2, w * 1.1, function (x, y, ang) {
+      ctx.translate(x, y); ctx.rotate(upright(ang));
+      ctx.fillStyle = 'rgba(255,255,255,0.82)';
+      ctx.beginPath(); ctx.moveTo(-w, -w * 0.5);
+      ctx.quadraticCurveTo(0, -w * 0.75, w, -w * 0.5);
+      ctx.quadraticCurveTo(w * 1.1, 0, w, w * 0.55);
+      ctx.quadraticCurveTo(0, w * 0.8, -w, w * 0.55);
+      ctx.quadraticCurveTo(-w * 1.1, 0, -w, -w * 0.5);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = shade(f.hex, 0.25); ctx.lineWidth = 1.4; ctx.stroke();
+      ctx.fillStyle = shade(f.hex, 0.45); ctx.font = '900 ' + Math.round(w * 0.85) + 'px Arial, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('25', 0, 1);
+    });
+  };
+
+  M.cashew = function (ctx, f, a, b, st, w) {    // Fluo Cajoux : noix de cajou
+    ctx.strokeStyle = tint(f.hex, 0.45); ctx.lineWidth = w * 0.55; line(ctx, a, b);
+    later(a, b, st, w * 0.95, w * 0.7, function (x, y, ang, i) {
+      ctx.translate(x, y); ctx.rotate(rnd(x, y, i) * 6.2832);
+      var k = w * 1.1;
+      ctx.beginPath();
+      ctx.moveTo(-k * 0.4, -k * 0.05);
+      ctx.bezierCurveTo(-k * 0.35, -k * 0.45, k * 0.35, -k * 0.45, k * 0.42, 0);
+      ctx.bezierCurveTo(k * 0.46, k * 0.25, k * 0.2, k * 0.3, k * 0.14, k * 0.1);
+      ctx.bezierCurveTo(k * 0.04, -k * 0.02, -k * 0.2, k * 0.08, -k * 0.24, k * 0.3);
+      ctx.bezierCurveTo(-k * 0.4, k * 0.36, -k * 0.46, k * 0.1, -k * 0.4, -k * 0.05);
+      ctx.closePath();
+      ctx.fillStyle = f.hex; ctx.fill();
+      ctx.strokeStyle = shade(f.hex, 0.35); ctx.lineWidth = 1.6; ctx.stroke();
+    });
+  };
+
+  M.rugby = function (ctx, f, a, b, st, w) {     // Fluo Fisi'ihoi : des ballons de rugby
+    ctx.strokeStyle = tint(f.hex, 0.55); ctx.lineWidth = w * 0.45; line(ctx, a, b);
+    later(a, b, st, w * 1.25, w * 0.9, function (x, y, ang) {
+      ctx.translate(x, y); ctx.rotate(ang);
+      var rx = w * 0.66, ry = w * 0.4;
+      ctx.beginPath();                                   // ballon ovale, pointu aux deux bouts
+      ctx.moveTo(-rx, 0);
+      ctx.bezierCurveTo(-rx * 0.6, -ry * 1.45, rx * 0.6, -ry * 1.45, rx, 0);
+      ctx.bezierCurveTo(rx * 0.6, ry * 1.45, -rx * 0.6, ry * 1.45, -rx, 0);
+      ctx.closePath();
+      ctx.fillStyle = f.hex; ctx.fill();
+      ctx.strokeStyle = shade(f.hex, 0.45); ctx.lineWidth = 1.8; ctx.stroke();
+      ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.8;  // lacets
+      ctx.beginPath(); ctx.moveTo(-rx * 0.3, 0); ctx.lineTo(rx * 0.3, 0); ctx.stroke();
+      for (var k = -2; k <= 2; k++) { ctx.beginPath(); ctx.moveTo(k * rx * 0.13, -ry * 0.3); ctx.lineTo(k * rx * 0.13, ry * 0.3); ctx.stroke(); }
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 2;   // bandes blanches
+      [-0.62, 0.62].forEach(function (d) { ctx.beginPath(); ctx.moveTo(d * rx, -ry * 0.62); ctx.quadraticCurveTo(d * rx * 1.08, 0, d * rx, ry * 0.62); ctx.stroke(); });
+    });
+  };
+
+  M.coat = function (ctx, f, a, b, st, w) {      // Fluo Manteau volé : des manteaux sur cintre
+    ctx.strokeStyle = shade(f.hex, 0.4); ctx.lineWidth = 3; line(ctx, a, b);
+    later(a, b, st, w * 1.3, w * 0.9, function (x, y) {
+      var k = w;
+      ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(x, y - k * 0.58, k * 0.13, Math.PI * 0.15, Math.PI * 1.75); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x - k * 0.62, y - k * 0.05); ctx.lineTo(x - k * 0.26, y - k * 0.4); ctx.lineTo(x + k * 0.26, y - k * 0.4);
+      ctx.lineTo(x + k * 0.62, y - k * 0.05); ctx.lineTo(x + k * 0.5, y + k * 0.6); ctx.lineTo(x - k * 0.5, y + k * 0.6);
+      ctx.closePath();
+      ctx.fillStyle = f.hex; ctx.fill();
+      ctx.strokeStyle = shade(f.hex, 0.45); ctx.lineWidth = 1.8; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - k * 0.4); ctx.lineTo(x, y + k * 0.6); ctx.stroke();
+      ctx.fillStyle = '#FFE600';
+      [0.0, 0.25].forEach(function (d) { ctx.beginPath(); ctx.arc(x + k * 0.1, y + k * d, k * 0.045, 0, 6.2832); ctx.fill(); });
+    });
+  };
+
+  M.pasta = function (ctx, f, a, b, st, w) {     // Fluo Coquillette : des coquillettes
+    ctx.strokeStyle = tint(f.hex, 0.55); ctx.lineWidth = w * 0.45; line(ctx, a, b);
+    later(a, b, st, w * 0.85, w * 0.7, function (x, y, ang, i) {
+      var rot = rnd(x, y, i) * 6.2832;
+      ctx.strokeStyle = shade(f.hex, 0.18); ctx.lineWidth = w * 0.4;
+      ctx.beginPath(); ctx.arc(x, y, w * 0.3, rot, rot + 4.3); ctx.stroke();
+      ctx.strokeStyle = f.hex; ctx.lineWidth = w * 0.3;
+      ctx.beginPath(); ctx.arc(x, y, w * 0.3, rot, rot + 4.3); ctx.stroke();
+      ctx.strokeStyle = tint(f.hex, 0.6); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(x, y, w * 0.3, rot + 0.3, rot + 3.9); ctx.stroke();
+    });
+  };
+
+  M.siuu = function (ctx, f, a, b, st, w) {      // Fluo Cristiano Ronaldo : SIUUU
+    ctx.strokeStyle = f.hex; ctx.lineWidth = w * 0.75; line(ctx, a, b);
+    later(a, b, st, w * 1.35, w * 0.9, function (x, y, ang, i) {
+      if (i % 2 === 0) {
+        ctx.fillStyle = '#FFD500'; ctx.strokeStyle = '#8A0019'; ctx.lineWidth = 2;
+        ctx.font = '900 ' + Math.round(w * 1.05) + 'px Arial, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.strokeText('7', x, y + 1); ctx.fillText('7', x, y + 1);
+      } else { ctx.fillStyle = '#00A651'; star(ctx, x, y, w * 0.55, 0, 5); }
+    });
+  };
+
+  M.car = function (ctx, f, a, b, st, w) {       // Fluo P'tite clito : une vieille Clio blanche
+    ctx.strokeStyle = f.hex; ctx.lineWidth = w * 0.4; line(ctx, a, b);
+    later(a, b, st, w * 2.7, w * 1.6, function (x, y, ang) {
+      ctx.translate(x, y); ctx.rotate(upright(ang));
+      var k = w;
+      ctx.beginPath();
+      ctx.moveTo(-k * 0.85, k * 0.22); ctx.lineTo(-k * 0.85, -k * 0.08); ctx.lineTo(-k * 0.5, -k * 0.14); ctx.lineTo(-k * 0.32, -k * 0.5);
+      ctx.lineTo(k * 0.28, -k * 0.5); ctx.lineTo(k * 0.52, -k * 0.14); ctx.lineTo(k * 0.85, -k * 0.06); ctx.lineTo(k * 0.85, k * 0.22);
+      ctx.closePath();
+      ctx.fillStyle = '#FFFFFF'; ctx.fill(); ctx.strokeStyle = '#4B5563'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#8EC5E8';
+      ctx.beginPath(); ctx.moveTo(-k * 0.4, -k * 0.12); ctx.lineTo(-k * 0.27, -k * 0.4); ctx.lineTo(-k * 0.02, -k * 0.4); ctx.lineTo(-k * 0.02, -k * 0.12); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(k * 0.06, -k * 0.12); ctx.lineTo(k * 0.06, -k * 0.4); ctx.lineTo(k * 0.25, -k * 0.4); ctx.lineTo(k * 0.44, -k * 0.12); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#B4621F';                                   // un peu de rouille : elle est vieille
+      ctx.beginPath(); ctx.arc(-k * 0.62, k * 0.1, k * 0.07, 0, 6.2832); ctx.arc(k * 0.7, k * 0.14, k * 0.05, 0, 6.2832); ctx.fill();
+      [-0.5, 0.5].forEach(function (d) {
+        ctx.fillStyle = '#1F2937'; ctx.beginPath(); ctx.arc(k * d, k * 0.26, k * 0.2, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = '#C7CDD6'; ctx.beginPath(); ctx.arc(k * d, k * 0.26, k * 0.08, 0, 6.2832); ctx.fill();
+      });
+    });
+  };
+
+  M.wizard = function (ctx, f, a, b, st, w) {    // Fluo Gandalf : chapeaux pointus et étoiles
+    ctx.strokeStyle = f.hex; ctx.lineWidth = w * 0.6; line(ctx, a, b);
+    later(a, b, st, w * 1.0, w * 0.9, function (x, y, ang, i) {
+      var k = w;
+      if (i % 2 === 0) {
+        ctx.fillStyle = '#6B7280';
+        ctx.beginPath(); ctx.moveTo(x - k * 0.38, y + k * 0.15); ctx.quadraticCurveTo(x - k * 0.1, y - k * 0.3, x + k * 0.22, y - k * 0.82);
+        ctx.quadraticCurveTo(x + k * 0.5, y - k * 0.5, x + k * 0.38, y + k * 0.15); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x, y + k * 0.15, k * 0.65, k * 0.15, 0, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = '#374151'; ctx.fillRect(x - k * 0.38, y + k * 0.02, k * 0.76, k * 0.1);
+      } else { ctx.fillStyle = '#FFD54F'; star(ctx, x, y, k * 0.42, 0.2, 5); }
+    });
+  };
+
+  M.bricks = function (ctx, f, a, b, st, w) {    // Fluo Batibat : briques de chantier
+    ctx.strokeStyle = tint(f.hex, 0.6); ctx.lineWidth = w * 0.85; line(ctx, a, b);
+    later(a, b, st, w * 0.7, w * 0.8, function (x, y, ang, i) {
+      ctx.translate(x, y); ctx.rotate(ang);
+      var off = i % 2 ? -w * 0.22 : w * 0.22;
+      ctx.fillStyle = i % 3 === 0 ? shade(f.hex, 0.15) : f.hex;
+      ctx.fillRect(-w * 0.62, off - w * 0.19, w * 1.24, w * 0.38);
+      ctx.strokeStyle = shade(f.hex, 0.45); ctx.lineWidth = 1.4;
+      ctx.strokeRect(-w * 0.62, off - w * 0.19, w * 1.24, w * 0.38);
+    });
+  };
+
   /* ---------- API ---------- */
   function begin() { return { next: 0, count: 0, dist: 0, p: null, ang: 0, q: [], lag: 0 }; }
 

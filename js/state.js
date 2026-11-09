@@ -21,20 +21,50 @@
   var S = fresh();
   var listeners = [];
 
-  function load() {
-    try {
-      var raw = localStorage.getItem(C.saveKey);
-      if (raw) {
-        var d = JSON.parse(raw), base = fresh();
-        S = Object.assign(base, d);
-        S.stats = Object.assign(base.stats, d.stats || {});
-        S.owned = (S.owned || []).filter(function (id) { return !!FS.fluoById(id); });
-        C.starterFluos.forEach(function (id) { if (S.owned.indexOf(id) < 0) S.owned.push(id); });
-        if (S.owned.indexOf(S.selected) < 0) S.selected = S.owned[0];
-      }
-    } catch (e) { S = fresh(); }
+  /* Lit la sauvegarde principale, ou la copie de secours si elle est illisible */
+  function readSave() {
+    var keys = [C.saveKey, C.saveKey + '-backup'];
+    for (var i = 0; i < keys.length; i++) {
+      try {
+        var raw = localStorage.getItem(keys[i]);
+        if (raw) { var d = JSON.parse(raw); if (d && typeof d === 'object') return d; }
+      } catch (e) { /* on essaie la copie suivante */ }
+    }
+    return null;
   }
-  function save() { try { localStorage.setItem(C.saveKey, JSON.stringify(S)); } catch (e) { /* mode privé */ } }
+
+  /* Charge la partie. Compatible avec les anciennes sauvegardes : les champs manquants
+     reprennent leur valeur de départ, les fluos disparus sont ignorés, les nouveaux
+     fluos sont simplement "pas encore débloqués". */
+  function load() {
+    var d = readSave(), base = fresh();
+    if (!d) { S = base; return; }
+    S = Object.assign(base, d);
+    S.stats = Object.assign(fresh().stats, d.stats || {});
+    S.calots = isFinite(S.calots) && S.calots >= 0 ? Math.floor(S.calots) : base.calots;
+    var seen = {};
+    S.owned = (Array.isArray(S.owned) ? S.owned : []).filter(function (id) {
+      if (!FS.fluoById(id) || seen[id]) return false;
+      seen[id] = 1; return true;
+    });
+    C.starterFluos.forEach(function (id) { if (!seen[id]) S.owned.push(id); });
+    S.newIds = (Array.isArray(S.newIds) ? S.newIds : []).filter(function (id) { return seen[id]; });
+    if (S.owned.indexOf(S.selected) < 0) S.selected = S.owned[0];
+    if (!(S.brush >= C.brush.min && S.brush <= C.brush.max)) S.brush = C.brush.default;
+  }
+  function save() {
+    var s = JSON.stringify(S);
+    try { localStorage.setItem(C.saveKey, s); localStorage.setItem(C.saveKey + '-backup', s); } catch (e) { /* mode privé */ }
+  }
+
+  /* Plan en cours (pour le retrouver en revenant sur le site) */
+  function savePlan(o) {
+    try { var s = JSON.stringify(o); if (s.length < 900000) localStorage.setItem(C.saveKey + '-plan', s); } catch (e) { /* ignore */ }
+  }
+  function loadPlan() {
+    try { var r = localStorage.getItem(C.saveKey + '-plan'); return r ? JSON.parse(r) : null; } catch (e) { return null; }
+  }
+  function clearPlan() { try { localStorage.removeItem(C.saveKey + '-plan'); } catch (e) { /* ignore */ } }
   function emit() { listeners.forEach(function (fn) { fn(S); }); }
   function change() { save(); emit(); }
 
@@ -100,6 +130,7 @@
   FS.State = {
     get: function () { return S; },
     load: load, save: save, change: change, has: has,
+    savePlan: savePlan, loadPlan: loadPlan, clearPlan: clearPlan,
     onChange: function (fn) { listeners.push(fn); },
     addCalots: addCalots, buyBox: buyBox, boxRemaining: boxRemaining,
     planReward: planReward, validatePlan: validatePlan,

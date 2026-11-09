@@ -106,8 +106,10 @@
     this.coverage = function () { return plan && plan.samples.length ? coveredCount / plan.samples.length : 0; };
     this.precision = function () { return totalLen > 0 ? nearLen / totalLen : 0; };
     this.strokeCount = function () { return strokes.length; };
-    this.undo = function () { if (!strokes.length) return false; strokes.pop(); redrawAll(); notify(); return true; };
-    this.clear = function () { strokes = []; redrawAll(); notify(); };
+    this.undo = function () { if (!strokes.length) return false; strokes.pop(); redrawAll(); notify(); if (hooks.onStroke) hooks.onStroke(); return true; };
+    this.clear = function () { strokes = []; redrawAll(); notify(); if (hooks.onStroke) hooks.onStroke(); };
+    this.getStrokes = function () { return strokes; };
+    this.restore = function (arr) { strokes = arr || []; redrawAll(); notify(); };
 
     this.toBlob = function (cb) {
       var c = document.createElement('canvas');

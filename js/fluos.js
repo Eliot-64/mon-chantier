@@ -1,6 +1,6 @@
 /* ==========================================================================
    MON CHANTIER — catalogue des fluos
-   64 communs + 42 rares + 7 exclusifs = 113 modèles.
+   64 communs + 42 rares + 15 exclusifs + 1 légendaire = 122 modèles.
    Chaque fluo a sa couleur ET sa trace (mode de dessin) : voir strokes.js
    ========================================================================== */
 (function () {
@@ -53,7 +53,9 @@
     glow: 'Halo', neon: 'Néon', sparkle: 'Étincelles', rainbow: 'Arc-en-ciel',
     bubbles: 'Bulles', hatch: 'Hachures', spray: 'Spray', hearts: 'Cœurs', stars: 'Étoiles',
     flames: 'Flammes', crowns: 'Couronnes', flowers: 'Fleurs', numbers: 'Chiffres 41',
-    slash: 'Lames', heist: 'Flammes & cagoule', aura: 'Aura dorée'
+    slash: 'Lames', heist: 'Flammes & cagoule', aura: 'Aura dorée',
+    veil: 'Voile & 25', cashew: 'Noix de cajou', rugby: 'Ballons de rugby', coat: 'Manteaux',
+    pasta: 'Coquillettes', siuu: 'Siuuu (7 & étoiles)', car: 'Vieille Clio', wizard: 'Chapeaux de magicien', bricks: 'Briques de chantier'
   };
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -87,6 +89,15 @@
     { id: 'age41', name: 'Fluo 41 ans', hex: '#FFCF00', rarity: 'exclusif', mode: 'numbers', w: 24, alpha: 0.9 },
     { id: 'snk', name: 'Fluo SNK', hex: '#2BFF88', rarity: 'exclusif', mode: 'slash', w: 20, alpha: 0.9 },
     { id: 'pompier', name: 'Fluo Pompier-Cambrioleur', hex: '#FF1F1F', rarity: 'exclusif', mode: 'heist', w: 24, alpha: 0.9 },
+    { id: 'v25', name: 'Fluo 25', note: 'Pour ceux qui se voilent la face', hex: '#FFA3D1', rarity: 'exclusif', mode: 'veil', w: 24, alpha: 0.9 },
+    { id: 'cajoux', name: 'Fluo Cajoux', hex: '#F4C98A', rarity: 'exclusif', mode: 'cashew', w: 22, alpha: 0.9 },
+    { id: 'fisiihoi', name: "Fluo Fisi'ihoi", note: '#mongrosbébé', hex: '#FF7FB5', rarity: 'exclusif', mode: 'rugby', w: 24, alpha: 0.9 },
+    { id: 'manteau', name: 'Fluo Manteau volé', hex: '#3A7BFF', rarity: 'exclusif', mode: 'coat', w: 24, alpha: 0.9 },
+    { id: 'coquillette', name: 'Fluo Coquillette', hex: '#FFE08A', rarity: 'exclusif', mode: 'pasta', w: 22, alpha: 0.9 },
+    { id: 'cr7', name: 'Fluo Cristiano Ronaldo', note: 'Siuuuuuuuuuu', hex: '#E8002D', rarity: 'exclusif', mode: 'siuu', w: 24, alpha: 0.9 },
+    { id: 'clito', name: 'Fluo P\u2019tite clito', note: 'Une vieille Renault Clio blanche', hex: '#9FB8CC', rarity: 'exclusif', mode: 'car', w: 24, alpha: 0.9 },
+    { id: 'gandalf', name: 'Fluo Gandalf', note: 'Tu ne passeras pas !', hex: '#A9B4C2', rarity: 'exclusif', mode: 'wizard', w: 24, alpha: 0.9 },
+    { id: 'batibat', name: 'Fluo Batibat', hex: '#E2572B', rarity: 'exclusif', mode: 'bricks', w: 24, alpha: 0.9 },
     { id: 'claudo', name: 'Fluo Super Saiyen Claudo', hex: '#FFD700', rarity: 'legendaire', mode: 'aura', w: 26, alpha: 0.95 }
   );
 
