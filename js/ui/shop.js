@@ -33,7 +33,7 @@
       hint = document.createElement('div'); hint.id = 'shopHint'; hint.className = 'hint';
       $('#boxes').parentNode.appendChild(hint);
     }
-    hint.innerHTML = 'Il te faut plus de calots ? Repasse des plans à l\'atelier !<br><button class="btn primary" data-go="atelier">🖍️ Retour à l\'atelier</button>';
+    hint.innerHTML = 'Il te faut plus de calots chéris ? Repasse des plans à l\'atelier !<br><button class="btn primary" data-go="atelier">🖍️ Retour à l\'atelier</button>';
   }
 
   function reveal(m, res) {
@@ -44,7 +44,7 @@
       '<div class="reveal"><span class="badge" style="--rc:' + r.color + '">' + r.label + '</span>' +
       '<div class="reveal-card" style="--rc:' + r.color + '">' + UI.previewCanvas(f.id, 480, 160) +
       '<h3>' + UI.esc(f.name) + '</h3><div class="tr">Trace : ' + UI.esc(f.traceLabel) + '</div></div>' +
-      (res.duplicate ? '<div class="tag-dup">Doublon… +' + res.refund + ' calots remboursés</div>' : '<div class="tag-new">✨ NOUVEAU FLUO !</div>') +
+      (res.duplicate ? '<div class="tag-dup">Doublon… +' + res.refund + ' calots chéris remboursés</div>' : '<div class="tag-new">✨ NOUVEAU FLUO !</div>') +
       '<div class="row" style="flex-direction:column">' +
       (res.duplicate ? '' : '<button class="btn primary" data-act="use">🖍️ Utiliser ce fluo</button>') +
       '<div class="row" style="margin-top:0"><button class="btn" data-act="close">Fermer</button>' +
@@ -58,7 +58,7 @@
 
   function open(boxId, m) {
     var res = FS.State.buyBox(boxId);
-    if (!res) { UI.toast('Pas assez de calots !'); return; }
+    if (!res) { UI.toast('Pas assez de calots chéris !'); return; }
     var html = '<div class="opening"><h2>' + UI.esc(res.box.name) + '</h2><p>Ouverture en cours…</p>' + UI.boxArt(res.box) + '</div>';
     if (!m) {
       m = UI.modal(html, { persistent: true });
