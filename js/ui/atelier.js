@@ -19,16 +19,52 @@
   }
 
   /* ---------- plan ---------- */
-  function newPlan() {
-    var st = $('#stage');
-    var portrait = st.clientHeight > st.clientWidth * 1.05;
-    var W = portrait ? 700 : 1000, H = portrait ? 1000 : 700;
-    plan = FS.Plans.generate(W, H, FS.Plans.newSeed());
+  function planSig(p) { return p.samples.length + ':' + Math.round(p.totalLength); }
+
+  /* Enregistre le plan en cours + les traits (format compact) */
+  function persistPlan() {
+    if (!plan) return;
+    FS.State.savePlan({
+      seed: plan.seed, W: plan.W, H: plan.H, sig: planSig(plan),
+      strokes: engine.getStrokes().map(function (s) {
+        var flat = [];
+        s.pts.forEach(function (p) { flat.push(Math.round(p.x * 10) / 10, Math.round(p.y * 10) / 10); });
+        return { id: s.id, scale: s.scale, pts: flat };
+      })
+    });
+  }
+
+  /* saved : plan enregistré à reprendre (facultatif) */
+  function newPlan(saved) {
+    var st = $('#stage'), W, H, seed;
+    if (saved && saved.seed && saved.W && saved.H) { W = saved.W; H = saved.H; seed = saved.seed; }
+    else {
+      saved = null;
+      var portrait = st.clientHeight > st.clientWidth * 1.05;
+      W = portrait ? 700 : 1000; H = portrait ? 1000 : 700; seed = FS.Plans.newSeed();
+    }
+    plan = FS.Plans.generate(W, H, seed);
+    if (saved && saved.sig !== planSig(plan)) {       // le générateur a changé (mise à jour) : on repart d'un plan neuf
+      saved = null;
+      plan = FS.Plans.generate(W, H, FS.Plans.newSeed());
+    }
     engine.setPlan(plan);
     notified = false;
+    if (saved && Array.isArray(saved.strokes)) {
+      var strokes = [];
+      saved.strokes.forEach(function (s) {
+        if (!FS.fluoById(s.id) || !s.pts || s.pts.length < 2) return;
+        var pts = [];
+        for (var i = 0; i + 1 < s.pts.length; i += 2) pts.push({ x: s.pts[i], y: s.pts[i + 1] });
+        strokes.push({ id: s.id, scale: s.scale || 1, pts: pts });
+      });
+      engine.restore(strokes);
+      notified = engine.coverage() >= C.plan.autoCompleteAt;
+    }
     $('#planName').textContent = 'Plan n°' + plan.number + ' · ' + plan.title;
     fit();
-    progress(0, 0);
+    progress(engine.coverage(), engine.precision());
+    persistPlan();
   }
 
   function progress(cov, prec) {
@@ -39,7 +75,7 @@
     btn.textContent = ok ? '✅ Valider +' + FS.State.planReward(plan, cov, prec) : '✅ Valider';
     if (cov >= C.plan.autoCompleteAt && !notified) {
       notified = true;
-      UI.toast('Contours repassés ! Valide ton plan pour gagner des calots chéris 🪙');
+      UI.toast('Contours repassés ! Valide ton plan pour gagner des calots 🪙');
       UI.vibrate(30);
     }
   }
@@ -96,7 +132,7 @@
   }
 
   function init() {
-    engine = new FS.Engine($('#planCanvas'), $('#inkCanvas'), { onProgress: progress });
+    engine = new FS.Engine($('#planCanvas'), $('#inkCanvas'), { onProgress: progress, onStroke: persistPlan });
 
     $('#btnNew').addEventListener('click', function () {
       if (engine.strokeCount() > 0 && engine.coverage() > 0.15) {
@@ -145,7 +181,7 @@
     window.addEventListener('orientationchange', function () { setTimeout(fit, 250); });
 
     renderTray(true);
-    newPlan();
+    newPlan(FS.State.loadPlan());
   }
 
   FS.UI.Atelier = {

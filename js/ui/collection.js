@@ -45,7 +45,7 @@
     var m = UI.modal(
       '<span class="badge" style="--rc:' + r.color + '">' + r.label + '</span>' +
       '<div class="reveal-card" style="--rc:' + r.color + '">' + UI.previewCanvas(f.id, 480, 160) +
-      '<h3>' + UI.esc(f.name) + '</h3><div class="tr">Trace : ' + UI.esc(f.traceLabel) + '</div></div>' +
+      '<h3>' + UI.esc(f.name) + '</h3><div class="tr">Trace : ' + UI.esc(f.traceLabel) + '</div>' + (f.note ? '<div class="tr note">' + UI.esc(f.note) + '</div>' : '') + '</div>' +
       '<div class="row"><button class="btn" data-act="close">Fermer</button><button class="btn primary" data-act="use">🖍️ Utiliser</button></div>');
     UI.paintPreviews(m.el);
     m.el.addEventListener('click', function (e) {
