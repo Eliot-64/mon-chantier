@@ -6,7 +6,7 @@ et on les dépense en **boîtes** pour débloquer de nouveaux fluos — jusqu'au
 *Fluo Super Saiyen Claudo*.
 
 Site 100 % statique (HTML / CSS / JavaScript, **aucune dépendance, aucune installation**),
-pensé **mobile d'abord** et adapté au PC. La progression est sauvegardée dans le navigateur.
+pensé **mobile d'abord** et adapté au PC. La progression est **sauvegardée automatiquement** dans le navigateur (voir « Sauvegarde »).
 
 ## ▶️ Jouer
 
@@ -25,14 +25,14 @@ pensé **mobile d'abord** et adapté au PC. La progression est sauvegardée dans
 
 On démarre avec **41 calots** et **4 fluos** (jaune, rose, vert, bleu), chacun avec une trace différente.
 Le jeu n'est pas fait pour s'éterniser : le 1er plan rapporte ~100 calots, donc une Box Exclusive dès le 1er plan ;
-tous les exclusifs arrivent en ~5 plans et la collection complète (113 fluos) en ~27 plans.
+tous les exclusifs arrivent en ~13 plans et la collection complète (122 fluos) en ~34 plans.
 Les tirages favorisent les fluos qu'on n'a pas encore, et un doublon rembourse la moitié de la boîte.
 
-### Les 113 fluos
+### Les 122 fluos
 
 - **64 communs** — 64 couleurs, 8 traces simples (classique, pointe biseau, tirets, pointillés, double trait, vagues, zigzag, pixels).
 - **42 rares** — 42 couleurs, 9 traces spéciales (halo, néon, étincelles, arc-en-ciel, bulles, hachures, spray, cœurs, étoiles).
-- **7 exclusifs**, chacun avec sa trace unique :
+- **16 exclusifs** (15 exclusifs + 1 légendaire), chacun avec sa trace unique :
 
 | Fluo | Rareté | Trace |
 |---|---|---|
@@ -42,6 +42,15 @@ Les tirages favorisent les fluos qu'on n'a pas encore, et un doublon rembourse l
 | Fluo 41 ans | Exclusif | Des « 41 » tout le long du trait |
 | Fluo SNK | Exclusif | Lames croisées |
 | Fluo Pompier-Cambrioleur | Exclusif | Flammes de pompier + masques de cambrioleur |
+| Fluo 25 *(pour ceux qui se voilent la face)* | Exclusif | Voiles marqués « 25 » |
+| Fluo Cajoux | Exclusif | Noix de cajou |
+| Fluo Fisi'ihoi *(#mongrosbébé)* | Exclusif | Ballons de rugby |
+| Fluo Manteau volé | Exclusif | Manteaux sur cintre |
+| Fluo Coquillette | Exclusif | Coquillettes |
+| Fluo Cristiano Ronaldo *(Siuuuuuuuuuu)* | Exclusif | « 7 » et étoiles |
+| Fluo P’tite clito *(une vieille Renault Clio blanche)* | Exclusif | Vieilles Clio blanches (avec un peu de rouille) |
+| Fluo Gandalf | Exclusif | Chapeaux pointus et étoiles |
+| Fluo Batibat | Exclusif | Briques de chantier |
 | Fluo Super Saiyen Claudo | **Légendaire** (le plus rare) | Aura dorée et éclairs |
 
 Chaque fluo a une couleur **et** une trace différentes (vérifié par les tests).
@@ -56,7 +65,7 @@ mon-chantier/
 │   └── components.css      Boutique, collection, fenêtres, animations
 ├── js/
 │   ├── config.js           ⚙️ Réglages : prix, calots de départ, raretés, récompenses, dédicace
-│   ├── fluos.js            📒 Catalogue des 113 fluos (couleur, rareté, mode de trace)
+│   ├── fluos.js            📒 Catalogue des 122 fluos (couleur, rareté, mode de trace)
 │   ├── strokes.js          🖍️ Moteur de traces : une fonction de dessin par mode
 │   ├── plans.js            📐 Générateur de plans (déterministe par graine) + rendu
 │   ├── state.js            💾 État du jeu, sauvegarde localStorage, boîtes, récompenses
@@ -80,6 +89,17 @@ Les scripts sont de simples `<script>` partageant un espace de noms global `FS` 
 **Dessin** : deux canvas superposés — le plan en dessous, l'encre en dessus en `mix-blend-mode: multiply`,
 comme un vrai surligneur (le noir des murs reste visible sous la couleur).
 
+## 💾 Sauvegarde
+
+Tout est enregistré **automatiquement dans le navigateur** (calots, fluos débloqués, fluo choisi, statistiques
+**et même le plan en cours avec les traits déjà tracés**). Quand on quitte le site et qu'on revient, on retrouve exactement sa partie.
+
+- Elle **survit aux mises à jour du site** : les nouveaux fluos arrivent simplement « pas encore débloqués ».
+  Pour que ça marche, **ne change jamais `saveKey`** dans `js/config.js`.
+- Une **copie de secours** est gardée à côté de la sauvegarde principale.
+- La sauvegarde est propre à chaque **appareil et navigateur** (elle ne passe pas du téléphone à l'ordinateur) et disparaît si on
+  vide les données du site ou si on joue en navigation privée.
+
 ## 🔧 Personnaliser
 
 - **Prix, calots de départ, récompenses, nom sur le message d'accueil** → `js/config.js`.
@@ -94,7 +114,7 @@ comme un vrai surligneur (le noir des murs reste visible sous la couleur).
 node tests/run.js        # ou : npm test
 ```
 
-Vérifie le catalogue (≥ 100 fluos, couleurs et traces toutes différentes), le dessin des 113 traces,
+Vérifie le catalogue (≥ 100 fluos, couleurs et traces toutes différentes), le dessin des 122 traces, la sauvegarde (y compris d'anciennes sauvegardes),
 800 plans générés, le suivi des contours (couverture / précision / annuler) et l'équilibrage de l'économie.
 
 ## 🌍 Mettre en ligne (GitHub Pages)
