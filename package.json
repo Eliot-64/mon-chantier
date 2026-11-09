@@ -1,0 +1,11 @@
+{
+  "name": "mon-chantier",
+  "version": "1.0.0",
+  "description": "Mon chantier : repasse des plans de bâtiment au surligneur, gagne des calots et collectionne les fluos.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node tests/run.js"
+  }
+}

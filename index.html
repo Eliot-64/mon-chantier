@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0B1020">
+  <meta name="description" content="Mon chantier : repasse les plans au surligneur, gagne des calots et collectionne les fluos.">
+  <title>Mon chantier</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><b>MON</b><span>CHANTIER</span></div>
+
+    <nav class="tabs" id="tabs" aria-label="Navigation">
+      <button class="tab active" data-view="atelier"><i>🖍️</i><span>Atelier</span></button>
+      <button class="tab" data-view="boutique"><i>🎁</i><span>Boutique</span></button>
+      <button class="tab" data-view="collection"><i>📒</i><span>Collection</span><em class="dot" id="newDot" hidden></em></button>
+    </nav>
+
+    <div class="wallet" id="wallet" title="Tes calots"><span class="calot"></span><b id="calots">0</b></div>
+  </header>
+
+  <main>
+    <!-- ================= ATELIER ================= -->
+    <section id="view-atelier" class="view active">
+      <div class="atelier">
+        <div class="stage" id="stage">
+          <div class="paper" id="paper">
+            <canvas id="planCanvas"></canvas>
+            <canvas id="inkCanvas"></canvas>
+          </div>
+        </div>
+
+        <aside class="panel">
+          <div class="progress">
+            <div class="progress-top"><span id="planName">Plan</span><b id="coverageText">0 %</b></div>
+            <div class="bar"><i id="coverageBar"></i></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="btnNew">🏗️ Générer le plan</button>
+            <button class="btn success" id="btnValidate" disabled>✅ Valider</button>
+          </div>
+
+          <div class="tools">
+            <button class="icon-btn" id="btnUndo" title="Annuler" aria-label="Annuler">↩️</button>
+            <button class="icon-btn" id="btnClear" title="Effacer" aria-label="Effacer">🗑️</button>
+            <button class="icon-btn" id="btnSave" title="Enregistrer en image" aria-label="Enregistrer en image">📷</button>
+            <label class="brush"><span>Trait</span><input type="range" id="brushRange" min="0.6" max="2.2" step="0.1" value="1" aria-label="Épaisseur du trait"></label>
+          </div>
+
+          <div class="tray-head"><span>Mes fluos</span><b id="trayCount"></b></div>
+          <div class="tray" id="tray"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= BOUTIQUE ================= -->
+    <section id="view-boutique" class="view">
+      <div class="page">
+        <h1>La boutique à calots</h1>
+        <p class="lead">Repasse des plans pour gagner des calots, puis ouvre des boîtes pour dénicher de nouveaux fluos.</p>
+        <div class="boxes" id="boxes"></div>
+      </div>
+    </section>
+
+    <!-- ================= COLLECTION ================= -->
+    <section id="view-collection" class="view">
+      <div class="page">
+        <div class="coll-head">
+          <h1>Ma collection</h1>
+          <div class="coll-count"><b id="collOwned">0</b> / <span id="collTotal">0</span></div>
+        </div>
+        <div class="bar big"><i id="collBar"></i></div>
+        <div class="filters" id="filters"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/fluos.js"></script>
+<script src="js/strokes.js"></script>
+<script src="js/plans.js"></script>
+<script src="js/state.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui/common.js"></script>
+<script src="js/ui/atelier.js"></script>
+<script src="js/ui/shop.js"></script>
+<script src="js/ui/collection.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
