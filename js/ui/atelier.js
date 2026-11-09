@@ -39,7 +39,7 @@
     btn.textContent = ok ? '✅ Valider +' + FS.State.planReward(plan, cov, prec) : '✅ Valider';
     if (cov >= C.plan.autoCompleteAt && !notified) {
       notified = true;
-      UI.toast('Contours repassés ! Valide ton plan pour gagner des calots 🪙');
+      UI.toast('Contours repassés ! Valide ton plan pour gagner des calots chéris 🪙');
       UI.vibrate(30);
     }
   }
