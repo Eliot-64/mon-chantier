@@ -8,7 +8,7 @@ const root = path.join(__dirname, '..');
 const store = {};
 const sandbox = {
   console, Math, Date, JSON, Object, Array, Uint8Array, Float32Array, Number, String, Set, Map, Proxy,
-  localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } },
+  localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } },
   navigator: {}, devicePixelRatio: 1
 };
 sandbox.window = sandbox;
@@ -35,7 +35,9 @@ ok(F.every((f) => /^#[0-9A-Fa-f]{6}$/.test(f.hex)), 'couleurs valides');
 ok(F.every((f) => FS.CONFIG.rarities[f.rarity]), 'raretés valides');
 ok(F.every((f) => FS.Strokes.modes[f.mode]), 'chaque fluo a un mode de trace codé');
 ok(FS.fluosByRarity('commun').length === 64 && FS.fluosByRarity('rare').length === 42, '64 communs + 42 rares');
-['Fluo Diego', 'Fluo Reine', 'Fluo Chloé', 'Fluo 41 ans', 'Fluo SNK', 'Fluo Super Saiyen Claudo', 'Fluo Pompier-Cambrioleur']
+ok(FS.fluosByRarity('exclusif').length === 15 && FS.fluosByRarity('legendaire').length === 1, '15 exclusifs + 1 légendaire');
+['Fluo Diego', 'Fluo Reine', 'Fluo Chloé', 'Fluo 41 ans', 'Fluo SNK', 'Fluo Super Saiyen Claudo', 'Fluo Pompier-Cambrioleur',
+  'Fluo 25', 'Fluo Cajoux', "Fluo Fisi'ihoi", 'Fluo Manteau volé', 'Fluo Coquillette', 'Fluo Cristiano Ronaldo', 'Fluo P\u2019tite clito', 'Fluo Gandalf', 'Fluo Batibat']
   .forEach((n) => ok(F.some((f) => f.name === n && ['exclusif', 'legendaire'].includes(f.rarity)), `exclusif présent : ${n}`));
 ok(FS.fluoById('claudo').rarity === 'legendaire', 'Claudo est le plus rare (légendaire)');
 ok(FS.CONFIG.starterFluos.length === 4 && FS.CONFIG.starterFluos.every((id) => FS.fluoById(id)), '4 fluos de départ');
@@ -54,7 +56,7 @@ F.forEach((f) => {
     FS.Strokes.preview(cv, f);
   } catch (e) { drawErr++; console.log('   erreur', f.id, e.message); }
 });
-ok(drawErr === 0, 'les 113 fluos se dessinent sans erreur (trait, tap, aperçu)');
+ok(drawErr === 0, 'les ' + F.length + ' fluos se dessinent sans erreur (trait, tap, aperçu)');
 
 /* ---------------- plans ---------------- */
 section('Plans');
@@ -144,7 +146,7 @@ section('Économie (calots, boîtes)');
       while (target && S.boxRemaining(target) > 0 && S.get().calots >= target.price) S.buyBox(target.id, rand);
       const exOwned = FS.fluosByRarity('exclusif').concat(FS.fluosByRarity('legendaire')).filter((f) => S.has(f.id)).length;
       if (exOwned > 0 && firstExcl === null) firstExcl = plans;
-      if (exOwned === 7 && allExcl === null) allExcl = plans;
+      if (exOwned === 16 && allExcl === null) allExcl = plans;
       if (S.get().owned.length === F.length) { all = plans; break; }
       S.validatePlan(FS.Plans.generate(1000, 700, 1 + Math.floor(rand() * 9999)), 0.85, 0.8); plans++;
     }
@@ -154,7 +156,7 @@ section('Économie (calots, boîtes)');
   const med = (k) => runs.map((r) => r[k]).sort((x, y) => x - y)[15];
   console.log(`    joueur type (médiane sur 30 parties) : 1er exclusif après ${med('firstExcl')} plans, tous les exclusifs après ${med('allExcl')}, collection complète après ${med('all')}`);
   ok(med('firstExcl') <= 2, 'un premier fluo exclusif arrive très vite (≤ 2 plans)');
-  ok(med('allExcl') <= 15, 'tous les exclusifs en ≤ 15 plans');
+  ok(med('allExcl') <= 25, 'tous les exclusifs en ≤ 25 plans');
   ok(runs.every((r) => r.all !== null), 'la collection complète est toujours atteignable');
   ok(med('all') <= 45, `jeu qui ne s'éternise pas : collection complète en ≈ ${med('all')} plans`);
 
@@ -168,13 +170,50 @@ section('Économie (calots, boîtes)');
   }
   ok([...dropsBasic].join() === 'commun', 'Box Basique : uniquement des communs');
   ok([...dropsRare].join() === 'rare', 'Box Rare : uniquement des rares');
-  ok(Object.keys(dropsEx).length === 7 && FS.fluosByRarity('exclusif').concat(FS.fluosByRarity('legendaire')).every((f) => dropsEx[f.id]), 'Box Exclusive : les 7 fluos exclusifs sortent');
-  ok(Object.keys(dropsEx).every((id) => ['diego', 'reine', 'chloe', 'age41', 'snk', 'pompier', 'claudo'].includes(id)), 'Box Exclusive : contenu cohérent');
+  ok(Object.keys(dropsEx).length === 16 && FS.fluosByRarity('exclusif').concat(FS.fluosByRarity('legendaire')).every((f) => dropsEx[f.id]), 'Box Exclusive : les 16 fluos exclusifs sortent');
+  ok(Object.keys(dropsEx).every((id) => FS.fluosByRarity('exclusif').concat(FS.fluosByRarity('legendaire')).some((f) => f.id === id)), 'Box Exclusive : contenu cohérent');
   S.reset();
   S.addCalots(100000);
   const before = S.get().calots; let dup = null;
   for (let i = 0; i < 300 && !dup; i++) { const r = S.buyBox('basique'); if (r && r.duplicate) dup = r; }
   ok(dup && dup.refund === Math.round(FS.CONFIG.boxes[0].price * FS.CONFIG.duplicateRefund), 'doublon : remboursement partiel');
+  S.reset();
+})();
+
+/* ---------------- sauvegarde ---------------- */
+section('Sauvegarde (quitter / revenir / mise à jour)');
+(function () {
+  const S = FS.State, key = FS.CONFIG.saveKey;
+  S.reset(); S.addCalots(300);
+  S.buyBox('exclusive'); S.buyBox('rare'); S.select(FS.CONFIG.starterFluos[1]);
+  const before = JSON.parse(JSON.stringify(S.get()));
+  S.save(); S.load();
+  ok(JSON.stringify(S.get()) === JSON.stringify(before), 'sauvegarde puis rechargement : partie identique (calots, fluos, sélection)');
+
+  store[key] = '{ pas du json';                                   // sauvegarde principale corrompue
+  S.load();
+  ok(S.get().owned.length === before.owned.length && S.get().calots === before.calots, 'sauvegarde principale corrompue : la copie de secours prend le relais');
+
+  /* ancienne sauvegarde (avant la mise à jour) : sans les nouveaux fluos, avec un fluo disparu et un champ manquant */
+  const old = { v: 1, calots: 77, owned: ['c01', 'c25', 'c52', 'c41', 'diego', 'claudo', 'fluo-qui-nexiste-plus'], selected: 'diego', stats: { plans: 3 } };
+  store[key] = JSON.stringify(old); delete store[key + '-backup'];
+  S.load();
+  const g = S.get();
+  ok(g.calots === 77 && g.stats.plans === 3 && g.stats.boxes === 0, 'ancienne sauvegarde : calots et stats conservés, champs manquants complétés');
+  ok(g.owned.includes('diego') && g.owned.includes('claudo') && !g.owned.includes('fluo-qui-nexiste-plus'), 'ancienne sauvegarde : fluos gardés, fluo disparu ignoré');
+  ok(['v25', 'batibat', 'gandalf'].every((id) => !S.has(id)), 'les nouveaux fluos arrivent "pas encore débloqués"');
+  S.addCalots(100);
+  ok(S.buyBox('exclusive') !== null, 'la partie continue normalement après la mise à jour');
+
+  delete store[key]; delete store[key + '-backup'];
+  S.load();
+  ok(S.get().calots === FS.CONFIG.startCalots && S.get().owned.length === 4, 'aucune sauvegarde : nouvelle partie propre');
+
+  S.savePlan({ seed: 5, W: 1000, H: 700, sig: 'x', strokes: [{ id: 'c01', scale: 1, pts: [1, 2, 3, 4] }] });
+  const sp = S.loadPlan();
+  ok(sp && sp.seed === 5 && sp.strokes[0].pts.length === 4, 'plan en cours : enregistré puis relu');
+  S.clearPlan();
+  ok(S.loadPlan() === null, 'plan en cours : effaçable');
   S.reset();
 })();
 
